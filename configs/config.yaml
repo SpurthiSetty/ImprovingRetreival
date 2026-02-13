@@ -1,0 +1,55 @@
+# Experiment configuration for "Improving Retrieval in Financial QA"
+# SIGIR 2026 submission
+
+dataset:
+  name: "PatronusAI/financebench"
+  num_samples: 5          # number of samples to evaluate per experiment
+  pdf_dir: "pdf_documents"
+
+models:
+  chat: "gpt-4o"
+  embedding: "text-embedding-ada-002"
+  cross_encoder: "cross-encoder/ms-marco-TinyBERT-L-2-v2"
+
+retrieval:
+  base_rag:
+    top_k: 5
+  query_expansion:
+    top_k: 5
+  reranker:
+    initial_top_k: 10
+    final_top_k: 3
+
+vector_db:
+  collection_name: "Finance_bench_documents"
+  embedding_batch_size: 100
+
+evaluation:
+  metrics:
+    - cosine_similarity
+    - bert_score
+    - llm_eval
+
+results:
+  output_dir: "results"
+  files:
+    base_rag: "base_rag_results.csv"
+    query_expansion: "query_expansion_results.csv"
+    reranker: "reranker_results.csv"
+
+prompts:
+  base_rag_system: >
+    You are a financial chatbot trained to answer questions based on the information provided
+    in 10-K documents. Your responses should be directly sourced from the content of these documents.
+
+  query_expansion_no_context_system: >
+    You are a financial chatbot trained to answer financial questions to the absolute best
+    of your ability. Your primary focus should be on accuracy, specificity, and correctness,
+    particularly relating to financial statements, company performance, and market position.
+    Please answer each question with total accuracy, performing all necessary calculations
+    without skipping or simplifying any steps along the way. If you do not have enough
+    information to answer a question, please make whatever reasonable assumptions are
+    necessary and provide a full and complete answer.
+
+  evaluator_system: >
+    You are an evaluator that scores responses based on correctness.
